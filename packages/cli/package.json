@@ -1,0 +1,69 @@
+{
+  "name": "@zcraft/cli",
+  "version": "1.0.0",
+  "description": "Interactive CLI for FHEVM development",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "bin": {
+    "zcraft": "./bin/run.js"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/oclif.manifest.json"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf lib *.tsbuildinfo",
+    "dev": "ts-node --esm src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@fhevm/hardhat-plugin": "^0.1.0",
+    "@nomicfoundation/hardhat-ethers": "^4.0.3",
+    "@oclif/core": "^4.0.31",
+    "@oclif/plugin-help": "^6.2.17",
+    "@oclif/plugin-plugins": "^5.4.15",
+    "@zcraft/core": "workspace:*",
+    "chalk": "^5.3.0",
+    "ethers": "^6.16.0",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^12.2.0",
+    "ora": "^8.1.1",
+    "tiged": "^2.12.7"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  },
+  "oclif": {
+    "bin": "zcraft",
+    "dirname": "zcraft",
+    "commands": "./lib/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "new": {
+        "description": "Create new FHEVM example projects"
+      },
+      "docs": {
+        "description": "Generate documentation from contracts"
+      },
+      "call": {
+        "description": "Interactive contract REPL"
+      },
+      "catalog": {
+        "description": "Manage example templates"
+      }
+    }
+  }
+}
