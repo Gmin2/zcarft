@@ -1,0 +1,26 @@
+{
+  "name": "@zcraft/core",
+  "version": "1.0.0",
+  "description": "Core utilities for zcraft CLI",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "/lib"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf lib *.tsbuildinfo",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.2"
+  }
+}
