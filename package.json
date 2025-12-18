@@ -1,0 +1,43 @@
+{
+  "name": "zcraft",
+  "version": "1.0.0",
+  "description": "Interactive CLI for FHEVM development - Build, deploy, and interact with fully homomorphic encrypted smart contracts",
+  "private": true,
+  "packageManager": "pnpm@10.15.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/zcraft"
+  },
+  "keywords": [
+    "fhevm",
+    "fhe",
+    "zama",
+    "hardhat",
+    "cli",
+    "ethereum",
+    "privacy"
+  ],
+  "author": "Zama Bounty Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @zcraft/cli dev",
+    "build": "pnpm -r build",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "test": "pnpm -r test",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "pnpm -r typecheck",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^20.14.0",
+    "husky": "^9.0.11",
+    "typescript": "^5.5.2"
+  }
+}
