@@ -1,0 +1,13 @@
+{
+  "name": "@zcraft/templates",
+  "version": "1.0.0",
+  "description": "FHEVM example contract templates",
+  "private": true,
+  "files": [
+    "/contracts",
+    "/test"
+  ],
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  }
+}
