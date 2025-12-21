@@ -1,0 +1,379 @@
+{
+  "version": "1.0.0",
+  "categories": {
+    "basic": {
+      "name": "Basic",
+      "description": "Fundamental FHE operations and patterns",
+      "icon": "📦",
+      "order": 1
+    },
+    "encryption": {
+      "name": "Encryption & Decryption",
+      "description": "Input encryption and result decryption patterns",
+      "icon": "🔐",
+      "order": 2
+    },
+    "concepts": {
+      "name": "Key Concepts",
+      "description": "Access control, input proofs, and best practices",
+      "icon": "💡",
+      "order": 3
+    },
+    "applications": {
+      "name": "Applications",
+      "description": "Real-world FHE use cases and DeFi patterns",
+      "icon": "🎮",
+      "order": 4
+    },
+    "openzeppelin": {
+      "name": "OpenZeppelin",
+      "description": "ERC7984 confidential tokens and DeFi",
+      "icon": "🛡️",
+      "order": 5
+    }
+  },
+  "examples": {
+    "fhe-counter": {
+      "category": "basic",
+      "title": "FHE Counter",
+      "description": "Simple encrypted counter demonstrating basic FHE operations",
+      "source": "docs",
+      "contract": "examples/contracts/basic/FHECounter.sol",
+      "test": "examples/test/basic/FHECounter.test.ts",
+      "tags": ["basic", "arithmetic", "counter", "beginner"],
+      "keyConcepts": [
+        "euint32 encrypted type",
+        "TFHE.add and TFHE.sub operations",
+        "FHE.allow and FHE.allowThis access control",
+        "Input proof validation with FHE.fromExternal"
+      ],
+      "difficulty": 1,
+      "estimatedTime": "15 minutes",
+      "learnPath": "start-here",
+      "highlights": [
+        "Perfect starting point for FHE",
+        "Shows transition from plaintext to encrypted",
+        "Covers all fundamental patterns"
+      ]
+    },
+    "fhe-if-then-else": {
+      "category": "basic",
+      "title": "FHE Conditional Logic",
+      "description": "Demonstrates conditional logic and comparisons on encrypted values",
+      "source": "docs",
+      "contract": "examples/contracts/basic/FHEIfThenElse.sol",
+      "test": "examples/test/basic/FHEIfThenElse.test.ts",
+      "tags": ["operations", "conditional", "comparison"],
+      "keyConcepts": [
+        "FHE.ge comparison operation",
+        "FHE.select for conditional selection",
+        "ebool encrypted boolean type",
+        "Computing max(a, b) without revealing values"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "20 minutes",
+      "highlights": [
+        "Learn encrypted comparisons",
+        "Understand FHE.select (if-then-else)",
+        "Essential for game logic and DeFi"
+      ]
+    },
+    "encrypt-decrypt-values": {
+      "category": "encryption",
+      "title": "Encrypt & Decrypt Values",
+      "description": "Complete guide to encrypting inputs and decrypting results",
+      "source": "docs",
+      "contract": "examples/contracts/encryption/EncryptDecryptValues.sol",
+      "test": "examples/test/encryption/EncryptDecryptValues.test.ts",
+      "tags": ["encryption", "decryption", "input-proof"],
+      "keyConcepts": [
+        "Creating encrypted inputs with fhevmjs",
+        "Zero-knowledge input proofs",
+        "User decryption (private to user)",
+        "Public decryption (on-chain reveal)",
+        "Multiple encrypted types (euint32, ebool, eaddress)"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "25 minutes",
+      "learnPath": "start-here",
+      "highlights": [
+        "Covers both encryption and decryption",
+        "Shows user vs public decryption",
+        "Demonstrates multiple types"
+      ]
+    },
+    "access-control": {
+      "category": "concepts",
+      "title": "Access Control Patterns",
+      "description": "Master FHE permission management patterns",
+      "source": "custom",
+      "contract": "examples/contracts/concepts/AccessControl.sol",
+      "test": "examples/test/concepts/AccessControl.test.ts",
+      "tags": ["access-control", "permissions", "security"],
+      "keyConcepts": [
+        "FHE.allow for persistent user access",
+        "FHE.allowThis for contract access",
+        "FHE.allowTransient for temporary access",
+        "Permission hierarchy and lifecycle",
+        "Common permission errors and fixes"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "25 minutes",
+      "highlights": [
+        "Critical for all FHE development",
+        "Shows common pitfalls",
+        "Demonstrates all permission patterns"
+      ]
+    },
+    "input-proofs": {
+      "category": "concepts",
+      "title": "Input Proof Security",
+      "description": "Why input proofs are critical for FHE security",
+      "source": "custom",
+      "contract": "examples/contracts/concepts/InputProofs.sol",
+      "test": "examples/test/concepts/InputProofs.test.ts",
+      "tags": ["security", "proofs", "attack-prevention"],
+      "keyConcepts": [
+        "What are input proofs",
+        "Preventing ciphertext mauling attacks",
+        "Preventing replay attacks",
+        "Contract/user address binding",
+        "Security implications of missing proofs"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "25 minutes",
+      "highlights": [
+        "Essential security knowledge",
+        "Shows attack scenarios",
+        "Explains cryptographic binding"
+      ]
+    },
+    "blind-auction": {
+      "category": "applications",
+      "title": "Blind Auction",
+      "description": "Sealed-bid NFT auction with encrypted bids",
+      "source": "docs",
+      "contract": "examples/contracts/applications/BlindAuction.sol",
+      "test": "examples/test/applications/BlindAuction.test.ts",
+      "tags": ["auction", "nft", "advanced", "game-theory"],
+      "keyConcepts": [
+        "FHE.select for max bidder determination",
+        "Gateway public decryption for winner",
+        "Time-locked auction phases",
+        "Refund mechanism for losing bidders",
+        "Integration with ERC721 and ConfidentialERC20",
+        "Complete end-to-end FHE application"
+      ],
+      "difficulty": 4,
+      "estimatedTime": "60 minutes",
+      "learnPath": "advanced",
+      "highlights": [
+        "Complete real-world application",
+        "Shows multi-phase design",
+        "Demonstrates FHE advantages over commit-reveal"
+      ]
+    },
+    "confidential-voting": {
+      "category": "applications",
+      "title": "Confidential Voting",
+      "description": "Secret ballot voting with encrypted tallies",
+      "source": "custom",
+      "contract": "examples/contracts/applications/ConfidentialVoting.sol",
+      "test": "examples/test/applications/ConfidentialVoting.test.ts",
+      "tags": ["voting", "governance", "privacy"],
+      "keyConcepts": [
+        "Encrypted vote storage",
+        "Private vote tallying with TFHE.add",
+        "Public result revelation via Gateway",
+        "Double-voting prevention",
+        "Time-bound voting periods"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "45 minutes",
+      "highlights": [
+        "Real-world governance use case",
+        "Shows encrypted aggregation",
+        "Privacy-preserving democracy"
+      ]
+    },
+    "erc7984-token": {
+      "category": "openzeppelin",
+      "title": "ERC7984 Confidential Token",
+      "description": "Confidential ERC-20 token with encrypted balances",
+      "source": "openzeppelin",
+      "contract": "openzeppelin-confidential-contracts/contracts/token/ERC7984/ERC7984.sol",
+      "test": "examples/test/openzeppelin/ERC7984.test.ts",
+      "tags": ["erc7984", "token", "standard", "defi"],
+      "keyConcepts": [
+        "Encrypted balances with euint64",
+        "Confidential transfers without revealing amounts",
+        "Operator delegation system",
+        "Transfer-and-call callback pattern",
+        "ACL for encrypted value access",
+        "Industry-standard confidential token"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "45 minutes",
+      "learnPath": "defi",
+      "highlights": [
+        "OpenZeppelin standard implementation",
+        "Production-ready confidential token",
+        "Foundation for DeFi applications"
+      ]
+    },
+    "erc20-wrapper": {
+      "category": "openzeppelin",
+      "title": "ERC20 Wrapper",
+      "description": "Wrap standard ERC20 as confidential ERC7984",
+      "source": "openzeppelin",
+      "contract": "openzeppelin-confidential-contracts/contracts/token/ERC7984/extensions/ERC7984ERC20Wrapper.sol",
+      "test": "examples/test/openzeppelin/ERC7984Wrapper.test.ts",
+      "tags": ["wrapper", "bridge", "interop"],
+      "keyConcepts": [
+        "Wrapping public ERC20 to confidential ERC7984",
+        "Two-phase unwrap with disclosure proof",
+        "ERC1363 callback integration",
+        "Bridge between public and private tokens"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "40 minutes",
+      "highlights": [
+        "Connect to existing DeFi",
+        "Privacy layer for any ERC20",
+        "Shows wrap/unwrap patterns"
+      ]
+    },
+    "vesting-wallet": {
+      "category": "openzeppelin",
+      "title": "Confidential Vesting",
+      "description": "Token vesting with encrypted schedules",
+      "source": "openzeppelin",
+      "contract": "openzeppelin-confidential-contracts/contracts/finance/VestingWalletConfidential.sol",
+      "test": "examples/test/openzeppelin/VestingWallet.test.ts",
+      "tags": ["vesting", "defi", "finance"],
+      "keyConcepts": [
+        "Linear vesting schedule",
+        "Encrypted vesting amounts",
+        "Time-based release calculation",
+        "Cliff period support",
+        "Beneficiary release mechanism"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "40 minutes",
+      "learnPath": "defi",
+      "highlights": [
+        "Essential DeFi primitive",
+        "Private token lockups",
+        "Team/investor vesting"
+      ]
+    },
+    "confidential-swap": {
+      "category": "openzeppelin",
+      "title": "Confidential Token Swap",
+      "description": "Fully private swap between encrypted tokens",
+      "source": "openzeppelin",
+      "contract": "openzeppelin-confidential-contracts/contracts/mocks/docs/SwapERC7984ToERC7984.sol",
+      "test": "examples/test/openzeppelin/ConfidentialSwap.test.ts",
+      "tags": ["swap", "defi", "atomic"],
+      "keyConcepts": [
+        "Fully confidential token exchange",
+        "No amount disclosure required",
+        "Atomic swap guarantee",
+        "Privacy-preserving DeFi"
+      ],
+      "difficulty": 4,
+      "estimatedTime": "45 minutes",
+      "highlights": [
+        "Privacy-first DeFi",
+        "No information leakage",
+        "Foundation for confidential DEX"
+      ]
+    },
+    "erc7984-rwa": {
+      "category": "openzeppelin",
+      "title": "RWA Compliance Token",
+      "description": "Real-world asset token with compliance controls",
+      "source": "openzeppelin",
+      "contract": "openzeppelin-confidential-contracts/contracts/token/ERC7984/extensions/ERC7984Rwa.sol",
+      "test": "examples/test/openzeppelin/ERC7984Rwa.test.ts",
+      "tags": ["rwa", "compliance", "institutional", "advanced"],
+      "keyConcepts": [
+        "Freezable + Restricted + Pausable combined",
+        "Agent-based access control (ADMIN/AGENT roles)",
+        "Force transfer capabilities",
+        "User blocking/unblocking",
+        "Institutional compliance patterns",
+        "Multicall batch operations"
+      ],
+      "difficulty": 5,
+      "estimatedTime": "60 minutes",
+      "learnPath": "advanced",
+      "highlights": [
+        "Production RWA tokenization",
+        "Complete compliance framework",
+        "Institutional-grade controls"
+      ]
+    }
+  },
+  "learningPaths": {
+    "quickstart": {
+      "name": "Quick Start (30 mins)",
+      "description": "Get started with FHE in under 30 minutes",
+      "examples": ["fhe-counter", "encrypt-decrypt-values"]
+    },
+    "fundamentals": {
+      "name": "FHE Fundamentals (2 hours)",
+      "description": "Master the core concepts of FHEVM development",
+      "examples": [
+        "fhe-counter",
+        "fhe-if-then-else",
+        "encrypt-decrypt-values",
+        "access-control",
+        "input-proofs"
+      ]
+    },
+    "applications": {
+      "name": "Building Applications (3 hours)",
+      "description": "Build real-world FHE applications",
+      "examples": [
+        "fhe-counter",
+        "encrypt-decrypt-values",
+        "blind-auction",
+        "confidential-voting"
+      ]
+    },
+    "defi": {
+      "name": "Confidential DeFi (4 hours)",
+      "description": "Build privacy-preserving DeFi protocols",
+      "examples": [
+        "erc7984-token",
+        "erc20-wrapper",
+        "vesting-wallet",
+        "confidential-swap",
+        "erc7984-rwa"
+      ]
+    }
+  },
+  "stats": {
+    "totalExamples": 12,
+    "byDifficulty": {
+      "beginner": 3,
+      "intermediate": 4,
+      "advanced": 3,
+      "expert": 2
+    },
+    "byCategory": {
+      "basic": 2,
+      "encryption": 1,
+      "concepts": 2,
+      "applications": 2,
+      "openzeppelin": 5
+    },
+    "estimatedTotalTime": "7 hours",
+    "sources": {
+      "zama-docs": 4,
+      "openzeppelin": 5,
+      "custom": 3
+    }
+  }
+}
