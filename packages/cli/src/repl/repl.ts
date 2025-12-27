@@ -2,16 +2,13 @@
 // Provides command-line interface for calling encrypted contract functions
 
 import { createInterface, type Interface as ReadlineInterface } from 'readline';
-import { Contract, type TransactionReceipt, type Signer } from 'ethers';
+import { Contract, type Signer } from 'ethers';
+import { spawn } from 'child_process';
 import chalk from 'chalk';
 import {
   parseCommand,
-  shouldEncrypt,
-  unwrapEncrypted,
   type ParsedCommand,
 } from './parser.js';
-import { EncryptionHelper, FhevmType } from './encryption.js';
-import { FHEOperationAnalyzer, type FHEAnalysis } from './fhe-analyzer.js';
 
 /**
  * Transaction history entry
@@ -40,8 +37,7 @@ export interface ReplConfig {
   currentSignerIndex: number;
   network: string;
   chainId: number;
-  fhevm: any; // FhevmInstance from Hardhat plugin
-  mode: 'MOCK' | 'GATEWAY';
+  projectDir: string; // Project directory
 }
 
 /**
@@ -51,8 +47,6 @@ export class FHEVMRepl {
   private rl: ReadlineInterface | null;
   private history: HistoryEntry[];
   private historyIndex: number;
-  private encryptionHelper: EncryptionHelper;
-  private analyzer: FHEOperationAnalyzer;
   private isRunning: boolean;
   private config: ReplConfig;
 
@@ -62,8 +56,6 @@ export class FHEVMRepl {
     this.history = [];
     this.historyIndex = 1;
     this.isRunning = false;
-    this.encryptionHelper = new EncryptionHelper(config.fhevm);
-    this.analyzer = new FHEOperationAnalyzer();
   }
 
   /**
@@ -116,7 +108,7 @@ export class FHEVMRepl {
    * Display welcome message
    */
   private async displayWelcome(): Promise<void> {
-    const { contractName, contractAddress, network, mode, signers, currentSignerIndex } =
+    const { contractName, contractAddress, network, signers, currentSignerIndex } =
       this.config;
     const currentSigner = signers[currentSignerIndex];
     const signerAddress = await currentSigner.getAddress();
@@ -137,11 +129,10 @@ export class FHEVMRepl {
     console.log('');
 
     console.log(
-      `${chalk.bold(contractName)}@${chalk.gray(shortAddr)} [${chalk.cyan(network)}] [${chalk.yellow(mode.toLowerCase())}] >`,
+      `${chalk.bold(contractName)}@${chalk.gray(shortAddr)} [${chalk.cyan(network)}] >`,
     );
     console.log('');
 
-    console.log(chalk.bold('Mode: ') + chalk.yellow(mode) + ' encryption (instant)');
     console.log(
       chalk.bold('Network: ') +
         chalk.cyan(network) +
@@ -174,16 +165,18 @@ export class FHEVMRepl {
 
     functions.forEach((func: any) => {
       const isView = func.stateMutability === 'view' || func.stateMutability === 'pure';
-      const icon = isView ? '📖' : '📝';
+      const tag = isView ? chalk.cyan('[read]   ') : chalk.yellow('[mutates]');
 
       const params = func.inputs
-        .map((input: any) => `${input.internalType || input.type} ${input.name}`)
+        .filter((input: any) => input.name !== 'inputProof')
+        .map((input: any) => input.name)
         .join(', ');
+
       const returnType = func.outputs.length > 0
-        ? ` → ${func.outputs[0].internalType || func.outputs[0].type}`
+        ? ` -> ${func.outputs[0].internalType || func.outputs[0].type}`
         : '';
 
-      console.log(`  ${icon} ${chalk.white(func.name)}(${chalk.gray(params)})${chalk.cyan(returnType)}`);
+      console.log(`  ${tag} ${chalk.white(func.name)}(${chalk.gray(params)})${chalk.dim(returnType)}`);
     });
 
     console.log('');
@@ -237,28 +230,12 @@ export class FHEVMRepl {
         this.displayFunctions();
         break;
 
-      case 'info':
-        this.displayInfo();
-        break;
-
-      case 'fhe':
-        this.displayFHEAnalysis();
-        break;
-
       case 'history':
         this.displayHistory(parsed);
         break;
 
-      case 'replay':
-        await this.replayTransaction(parsed);
-        break;
-
       case 'network':
         this.displayNetwork();
-        break;
-
-      case 'mode':
-        this.displayMode();
         break;
 
       case 'help':
@@ -288,7 +265,7 @@ export class FHEVMRepl {
     }
 
     const { functionName, args } = parsed;
-    const { contract, fhevm, currentSignerIndex, signers, contractAddress } = this.config;
+    const { contract } = this.config;
 
     // Get function fragment from ABI
     const func = contract.interface.getFunction(functionName);
@@ -296,133 +273,62 @@ export class FHEVMRepl {
       throw new Error(`Function '${functionName}' not found`);
     }
 
-    // Prepare arguments with encryption
-    const preparedArgs = await this.prepareArguments(func, args);
-
-    // Determine if this is a view/pure function
-    const isView = func.stateMutability === 'view' || func.stateMutability === 'pure';
-
-    if (isView) {
-      // Call view function
-      const contractWithMethods = contract as any;
-      const result = await contractWithMethods[functionName](...preparedArgs);
-
-      // Add to history
-      this.addToHistory({
-        command: rawInput,
-        functionName,
-        args,
-        result,
-      });
-
-      // Display result
-      console.log('');
-      console.log(chalk.green('✅ ') + chalk.white(`Handle: ${result}`));
-
-      // Check if it's an encrypted type
-      const outputType = func.outputs[0]?.type;
-      if (outputType && this.isEncryptedType(outputType)) {
-        console.log(chalk.gray(`   Type: ${outputType}`));
-        console.log(chalk.gray('   To decrypt: ') + chalk.cyan(`decrypt(${functionName}())`));
-      }
-
-      console.log('');
-    } else {
-      // Execute transaction
-      console.log('');
-      console.log(chalk.gray('◇  Sending transaction...'));
-
-      const contractWithMethods = contract.connect(signers[currentSignerIndex]) as any;
-      const tx = await contractWithMethods[functionName](...preparedArgs);
-
-      console.log(chalk.gray(`◇  Wait for tx:${tx.hash.slice(0, 10)}...`));
-
-      const receipt = await tx.wait();
-
-      // Add to history
-      this.addToHistory({
-        command: rawInput,
-        functionName,
-        args,
-        txHash: receipt.hash,
-        blockNumber: receipt.blockNumber,
-        gasUsed: receipt.gasUsed,
-        status: receipt.status === 1 ? 'Success' : 'Failed',
-      });
-
-      // Display transaction result
-      this.displayTransactionResult(receipt);
-
-      // Analyze FHE operations
-      const analysis = this.analyzer.analyzeTransaction(receipt, contract.interface);
-      if (analysis.operations.length > 0) {
-        console.log(chalk.bold('FHE Operations Detected:'));
-        this.analyzer.getSummary(analysis).forEach((op) => {
-          console.log(`  - ${chalk.white(op)}`);
-        });
-        console.log('');
-      }
-    }
+    // Execute using npx hardhat task
+    await this.executeHardhatTask(functionName, args, rawInput, func);
   }
 
   /**
-   * Prepare function arguments with encryption
+   * Execute Hardhat task via npx hardhat
    */
-  private async prepareArguments(func: any, args: any[]): Promise<any[]> {
-    const { fhevm, currentSignerIndex, signers, contractAddress } = this.config;
-    const prepared: any[] = [];
-    let argIndex = 0;
+  private async executeHardhatTask(
+    functionName: string,
+    args: any[],
+    rawInput: string,
+    func: any
+  ): Promise<void> {
+    // Build task name
+    const taskName = `${this.config.contractName.toLowerCase()}:${functionName}`;
 
-    for (let i = 0; i < func.inputs.length; i++) {
-      const param = func.inputs[i];
-      // Use internalType for FHEVM types, fallback to type
-      const paramType = param.internalType || param.type;
+    // Build command arguments
+    const cmdArgs = ['hardhat', taskName];
 
-      // Check if this parameter needs encryption
-      const encryptionInfo = EncryptionHelper.detectEncryptionType(paramType);
-
-      if (encryptionInfo.needsEncryption) {
-        // This is an encrypted parameter (e.g., externalEuint32)
-        // Need to provide both the handle and the inputProof
-
-        let value = args[argIndex];
-        const needsEncryption = !shouldEncrypt(value);
-
-        if (needsEncryption) {
-          value = unwrapEncrypted(value);
-
-          // Encrypt the value
-          console.log(chalk.gray(`◇  Encrypting ${param.name || `param${i}`}: ${value}`));
-
-          const signerAddress = await signers[currentSignerIndex].getAddress();
-          const encrypted = await this.encryptionHelper.encrypt(
-            value,
-            encryptionInfo.encryptionType! as 'uint8' | 'uint16' | 'uint32' | 'uint64' | 'uint128' | 'uint256' | 'bool' | 'address',
-            contractAddress,
-            signerAddress,
-          );
-
-          // Add handle and inputProof
-          prepared.push(encrypted.handle);
-          prepared.push(encrypted.inputProof);
-        } else {
-          // Already encrypted, use as-is
-          prepared.push(value);
-        }
-
-        argIndex++;
-      } else if (paramType === 'bytes' && i > 0 && func.inputs[i - 1].type.startsWith('external')) {
-        // This is likely the inputProof parameter, skip it (already handled above)
-        // Don't increment argIndex
-        continue;
-      } else {
-        // Regular parameter
-        prepared.push(args[argIndex]);
-        argIndex++;
+    // Add function parameters
+    func.inputs.forEach((input: any, index: number) => {
+      if (input.name && input.name !== 'inputProof' && index < args.length) {
+        const paramName = input.name.toLowerCase();
+        cmdArgs.push(`--${paramName}`, String(args[index]));
       }
-    }
+    });
 
-    return prepared;
+    // Add network
+    cmdArgs.push('--network', this.config.network);
+
+    return new Promise((resolve, reject) => {
+      console.log('');
+
+      const child = spawn('npx', cmdArgs, {
+        cwd: this.config.projectDir,
+        stdio: 'inherit',
+      });
+
+      child.on('close', (code) => {
+        console.log('');
+        if (code === 0) {
+          this.addToHistory({
+            command: rawInput,
+            functionName,
+            args,
+          });
+          resolve();
+        } else {
+          reject(new Error(`Task exited with code ${code}`));
+        }
+      });
+
+      child.on('error', (error) => {
+        reject(error);
+      });
+    });
   }
 
   /**
@@ -433,74 +339,45 @@ export class FHEVMRepl {
       throw new Error('Missing expression to decrypt');
     }
 
-    console.log('');
-    console.log(chalk.gray('◇  Fetching encrypted handle...'));
-
-    // Check if expression is a function call or a direct handle
-    let handle: string;
+    // Parse function name from decrypt expression
+    let functionName: string;
 
     if (parsed.expression.includes('(')) {
-      // It's a function call like getCount()
       const funcParsed = parseCommand(parsed.expression);
       if (funcParsed.type !== 'function_call') {
         throw new Error('Invalid decrypt expression');
       }
-
-      // Call the function to get the handle
-      const contractWithMethods = this.config.contract as any;
-      const result = await contractWithMethods[funcParsed.functionName!](
-        ...(funcParsed.args || []),
-      );
-      handle = result;
+      functionName = funcParsed.functionName!;
     } else {
-      // It's a direct handle
-      handle = parsed.expression;
+      throw new Error('Decrypt requires a function call, e.g., decrypt(getCount())');
     }
 
-    console.log(chalk.gray(`   Handle: ${handle.slice(0, 10)}...`));
-    console.log(chalk.gray('   Type: euint32')); // TODO: detect type
+    // Build decrypt task name
+    const decryptTaskName = `${this.config.contractName.toLowerCase()}:decrypt-${functionName}`;
 
-    console.log('');
-    console.log(chalk.gray(`◇  Requesting decryption from ${this.config.mode}...`));
+    // Build command arguments
+    const cmdArgs = ['hardhat', decryptTaskName, '--network', this.config.network];
 
-    // Decrypt using the current signer
-    const decrypted = await this.encryptionHelper.decrypt(
-      handle,
-      2, // FhevmType.euint32 - TODO: detect from function
-      this.config.contractAddress,
-      this.config.signers[this.config.currentSignerIndex],
-    );
+    return new Promise((resolve, reject) => {
+      console.log('');
 
-    // Display result
-    console.log('');
-    console.log(chalk.green('┌─────────────────────────────────────────┐'));
-    console.log(chalk.green('│') + chalk.bold.white('  ✅ Decryption Successful               ') + chalk.green('│'));
-    console.log(chalk.green('├─────────────────────────────────────────┤'));
-    console.log(
-      chalk.green('│') +
-        `  Encrypted Handle: ${handle.slice(0, 12)}...`.padEnd(41) +
-        chalk.green('│'),
-    );
-    console.log(
-      chalk.green('│') + `  Decrypted Value:  ${decrypted}`.padEnd(41) + chalk.green('│'),
-    );
-    console.log(chalk.green('│') + `  Type:             euint32`.padEnd(41) + chalk.green('│'));
-    console.log(
-      chalk.green('│') +
-        `  Range:            0 - 4,294,967,295`.padEnd(41) +
-        chalk.green('│'),
-    );
-    console.log(chalk.green('└─────────────────────────────────────────┘'));
-    console.log('');
+      const child = spawn('npx', cmdArgs, {
+        cwd: this.config.projectDir,
+        stdio: 'inherit',
+      });
 
-    console.log(chalk.cyan('Privacy Note:'));
-    console.log(chalk.gray('  Only you can see this value (FHE.allow granted)'));
-    console.log('');
+      child.on('close', (code) => {
+        console.log('');
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error(`Decrypt task exited with code ${code}`));
+        }
+      });
 
-    // Add to history
-    this.addToHistory({
-      command: `decrypt(${parsed.expression})`,
-      result: decrypted,
+      child.on('error', (error) => {
+        reject(error);
+      });
     });
   }
 
@@ -551,31 +428,6 @@ export class FHEVMRepl {
     }
 
     console.log('');
-  }
-
-  /**
-   * Display contract information
-   */
-  private displayInfo(): void {
-    const { contractName, contractAddress, network, chainId, mode } = this.config;
-
-    console.log('');
-    console.log(chalk.bold('Contract Information:'));
-    console.log(`  Name:    ${chalk.white(contractName)}`);
-    console.log(`  Address: ${chalk.white(contractAddress)}`);
-    console.log(`  Network: ${chalk.cyan(network)} ${chalk.gray(`(chainId: ${chainId})`)}`);
-    console.log(`  Mode:    ${chalk.yellow(mode)}`);
-    console.log('');
-  }
-
-  /**
-   * Display FHE analysis for the contract
-   */
-  private displayFHEAnalysis(): void {
-    const abi = this.config.contract.interface.fragments.filter(
-      (f: any) => f.type === 'function',
-    );
-    this.analyzer.displayContractAnalysis(this.config.contractName, abi);
   }
 
   /**
@@ -648,27 +500,6 @@ export class FHEVMRepl {
     console.log(chalk.bold('Network:'));
     console.log(`  Name:     ${chalk.cyan(this.config.network)}`);
     console.log(`  Chain ID: ${this.config.chainId}`);
-    console.log(`  Mode:     ${chalk.yellow(this.config.mode)} encryption`);
-    console.log('');
-  }
-
-  /**
-   * Display mode information
-   */
-  private displayMode(): void {
-    const { mode } = this.config;
-
-    console.log('');
-    console.log(chalk.bold(`Current mode: ${chalk.yellow(mode)}`));
-
-    if (mode === 'MOCK') {
-      console.log(chalk.gray('  Encryption: Synchronous (instant)'));
-      console.log(chalk.gray('  Decryption: User-side (no Gateway)'));
-    } else {
-      console.log(chalk.gray('  Encryption: Asynchronous (via Gateway)'));
-      console.log(chalk.gray('  Decryption: Gateway-based'));
-    }
-
     console.log('');
   }
 
@@ -727,7 +558,7 @@ export class FHEVMRepl {
 Decrypt an encrypted handle via Gateway or mock mode.
 
 Examples:
-  decrypt(getCount())
+  decrypt(encryptedValue())
   decrypt(balance, signer: 1)
   decrypt(0xabc123...)
 
@@ -740,7 +571,7 @@ Encrypt a plaintext value for use in function calls.
 
 Examples:
   encrypt(5)
-  increment(encrypt(10))`,
+  myFunction(encrypt(10))`,
     };
 
     const helpText = helps[command];
@@ -754,42 +585,6 @@ Examples:
       console.log(chalk.gray("Try 'help' for a list of commands"));
       console.log('');
     }
-  }
-
-  /**
-   * Display transaction result
-   */
-  private displayTransactionResult(receipt: TransactionReceipt): void {
-    const gasPrice = receipt.gasPrice || 1n;
-    const totalCost = receipt.gasUsed * gasPrice;
-    const status = receipt.status === 1 ? '✅ Confirmed' : '✗ Failed';
-
-    console.log('');
-    console.log(chalk.green('┌─────────────────────────────────────────┐'));
-    console.log(chalk.green('│') + chalk.bold.white('  ✅ Transaction Successful              ') + chalk.green('│'));
-    console.log(chalk.green('├─────────────────────────────────────────┤'));
-    console.log(
-      chalk.green('│') +
-        `  Tx Hash:    ${receipt.hash.slice(0, 12)}...`.padEnd(41) +
-        chalk.green('│'),
-    );
-    console.log(
-      chalk.green('│') +
-        `  Block:      ${receipt.blockNumber}`.padEnd(41) +
-        chalk.green('│'),
-    );
-    console.log(
-      chalk.green('│') +
-        `  Gas Used:   ${receipt.gasUsed.toString()}`.padEnd(41) +
-        chalk.green('│'),
-    );
-    console.log(
-      chalk.green('│') +
-        `  Status:     ${status}`.padEnd(50) +
-        chalk.green('│'),
-    );
-    console.log(chalk.green('└─────────────────────────────────────────┘'));
-    console.log('');
   }
 
   /**
@@ -812,20 +607,6 @@ Examples:
       timestamp: new Date(),
       ...entry,
     });
-  }
-
-  /**
-   * Check if a type is an encrypted type
-   */
-  private isEncryptedType(type: string): boolean {
-    return (
-      type.startsWith('euint') ||
-      type === 'ebool' ||
-      type === 'eaddress' ||
-      type.startsWith('externalEuint') ||
-      type === 'externalEbool' ||
-      type === 'externalEaddress'
-    );
   }
 
   /**

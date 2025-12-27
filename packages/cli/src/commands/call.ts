@@ -8,16 +8,15 @@ import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs/promises';
 import { FHEVMRepl, type ReplConfig } from '../repl/repl.js';
-import { loadFHEVMFromProject } from '../helpers/load-fhevm.js';
 
 export default class Call extends Command {
   static override description = 'Call deployed FHEVM contract interactively';
 
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --network localhost',
     '<%= config.bin %> <%= command.id %> --address 0x5FbDB2315678afecb367f032d93F642f64180aa3',
-    '<%= config.bin %> <%= command.id %> --function increment --args "[5]"',
-    '<%= config.bin %> <%= command.id %> --function getCount --decrypt',
+    '<%= config.bin %> <%= command.id %> --network sepolia',
   ];
 
   static override flags = {
@@ -59,47 +58,6 @@ export default class Call extends Command {
       // Find project directory
       const projectDir = await this.findProjectDir();
 
-      // Check if this is a Hardhat project with the REPL task
-      const isHardhatProject = await this.isHardhatProject(projectDir);
-
-      if (isHardhatProject) {
-        // Use the Hardhat task instead
-        this.log(chalk.gray('Launching Hardhat REPL task...'));
-
-        const { spawn } = await import('child_process');
-        const hardhatArgs = ['hardhat', 'repl', '--network', flags.network];
-
-        if (flags.address) {
-          hardhatArgs.push('--contract', flags.address);
-        }
-
-        if (flags.function) {
-          hardhatArgs.push('--function', flags.function);
-        }
-
-        if (flags.args) {
-          hardhatArgs.push('--args', flags.args);
-        }
-
-        const hardhat = spawn('npx', hardhatArgs, {
-          cwd: projectDir,
-          stdio: 'inherit',
-        });
-
-        return new Promise((resolve, reject) => {
-          hardhat.on('close', (code) => {
-            if (code === 0) {
-              resolve();
-            } else {
-              reject(new Error(`Hardhat task exited with code ${code}`));
-            }
-          });
-        });
-      }
-
-      // Display banner
-      this.printBanner();
-
       // Get network configuration
       const networkConfig = await this.getNetworkConfig(flags.network, projectDir);
 
@@ -113,9 +71,6 @@ export default class Call extends Command {
       // Setup providers and signers
       const provider = new ethers.JsonRpcProvider(networkConfig.rpcUrl);
       const signers = await this.getSigners(provider, flags.signer);
-
-      // Initialize FHEVM
-      const fhevm = await this.initializeFHEVM(projectDir);
 
       // Load contract
       const contract = new ethers.Contract(
@@ -136,8 +91,7 @@ export default class Call extends Command {
         currentSignerIndex: 0,
         network: flags.network,
         chainId: Number(network.chainId),
-        fhevm,
-        mode: flags.network === 'localhost' ? 'MOCK' : 'GATEWAY',
+        projectDir,
       };
 
       // Check if non-interactive mode
@@ -151,15 +105,6 @@ export default class Call extends Command {
     } catch (error) {
       this.error(chalk.red(`Error: ${error instanceof Error ? error.message : String(error)}`));
     }
-  }
-
-  /**
-   * Print banner
-   */
-  private printBanner(): void {
-    this.log('');
-    this.log(chalk.green('T') + '   ' + chalk.bold.white('ZCraft') + ' : ' + chalk.gray('Call Contract'));
-    this.log(chalk.green('|'));
   }
 
   /**
@@ -432,57 +377,14 @@ export default class Call extends Command {
   }
 
   /**
-   * Initialize FHEVM
-   */
-  private async initializeFHEVM(projectDir: string): Promise<any> {
-    // Try to load FHEVM from Hardhat project
-    try {
-      const fhevm = await loadFHEVMFromProject(projectDir);
-      this.log(chalk.green('✅ Loaded Hardhat FHEVM plugin'));
-      return fhevm;
-    } catch (error) {
-      this.warn(
-        chalk.yellow(
-          'Could not load Hardhat FHEVM plugin. Using mock encryption (limited functionality).',
-        ),
-      );
-      this.warn(chalk.gray(`Tip: Make sure you're running from a Hardhat project with @fhevm/hardhat-plugin installed.`));
-    }
-
-    // Return a mock FHEVM instance for basic functionality
-    const mockInput = {
-      add8: function() { return this; },
-      add16: function() { return this; },
-      add32: function() { return this; },
-      add64: function() { return this; },
-      add128: function() { return this; },
-      add256: function() { return this; },
-      addBool: function() { return this; },
-      addAddress: function() { return this; },
-      encrypt: async () => ({
-        handles: ['0x0000000000000000000000000000000000000000000000000000000000000000'],
-        inputProof: '0x',
-      }),
-    };
-
-    return {
-      createEncryptedInput: () => mockInput,
-      userDecryptEuint: async () => 0n,
-      userDecryptEbool: async () => false,
-      userDecryptEaddress: async () => '0x0000000000000000000000000000000000000000',
-    };
-  }
-
-  /**
    * Execute non-interactive function call
    */
   private async executeNonInteractive(config: ReplConfig, flags: any): Promise<void> {
     this.error(
-      chalk.yellow('Non-interactive mode with encryption is not yet fully implemented.\n') +
+      chalk.yellow('Non-interactive mode is not yet fully implemented.\n') +
       chalk.gray('Please use interactive mode by running: ') +
       chalk.cyan('zcraft call') +
-      chalk.gray('\nThen call functions like: ') +
-      chalk.white('increment(5)')
+      chalk.gray('\nThen call contract functions interactively')
     );
   }
 }
