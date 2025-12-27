@@ -68,5 +68,8 @@
         "description": "Manage example templates"
       }
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -189,9 +189,10 @@ export default class Docs extends Command {
             continue;
           }
 
-          // Find corresponding .sol file
-          const solFile = entry.replace('.json', '.sol');
-          const solPath = join(dirname(fullPath), solFile);
+          // Find corresponding .sol file in contracts directory
+          // artifacts/contracts/FHECounter.sol/FHECounter.json -> contracts/FHECounter.sol
+          const relativePath = dir.replace(join(projectDir, 'artifacts', 'contracts') + '/', '');
+          const solPath = join(projectDir, 'contracts', relativePath);
 
           if (existsSync(solPath)) {
             // Try to find test file

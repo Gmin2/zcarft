@@ -36,5 +36,8 @@
     "markdown"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }
