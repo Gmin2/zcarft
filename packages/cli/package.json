@@ -28,6 +28,7 @@
     "@oclif/plugin-plugins": "^5.4.15",
     "@zcraft/codegen": "workspace:*",
     "@zcraft/core": "workspace:*",
+    "@zcraft/docgen": "workspace:*",
     "abitype": "^1.2.3",
     "chalk": "^5.3.0",
     "ethers": "^6.16.0",
@@ -57,14 +58,11 @@
       "new": {
         "description": "Create new FHEVM example projects"
       },
-      "docs": {
-        "description": "Generate documentation from contracts"
-      },
       "call": {
         "description": "Interactive contract REPL"
       },
       "generate": {
-        "description": "Generate Hardhat tasks from contract ABIs"
+        "description": "Generate code from contracts (tasks, docs, etc.)"
       },
       "catalog": {
         "description": "Manage example templates"

@@ -80,7 +80,7 @@ function addImportToHardhatConfig(
   }
 }
 
-export default class Generate extends Command {
+export default class Task extends Command {
   static override description = 'Generate Hardhat tasks from contract ABI';
 
   static override examples = [
