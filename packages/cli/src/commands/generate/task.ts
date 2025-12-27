@@ -111,7 +111,7 @@ export default class Task extends Command {
   };
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Generate);
+    const { args, flags } = await this.parse(Task);
 
     try {
       // Resolve ABI file path
