@@ -1,0 +1,77 @@
+### {{name}}({{#each inputs}}{{#unless (eq name 'inputProof')}}{{name}}{{#unless @last}}, {{/unless}}{{/unless}}{{/each}}) {{fhevmIcon this}}
+
+{{#if description}}{{description}}{{else}}{{#if (isView this)}}View function{{else}}State-modifying function{{/if}} in the {{../name}} contract.{{/if}}
+
+**Signature:**
+```solidity
+function {{name}}({{#each inputs}}{{type}} {{#if name}}{{name}}{{/if}}{{#unless @last}}, {{/unless}}{{/each}}){{#if (isView this)}} view{{/if}}{{#if (isPure this)}} pure{{/if}}{{#if outputs.length}} returns ({{#each outputs}}{{type}}{{#unless @last}}, {{/unless}}{{/each}}){{/if}}
+```
+
+{{#if inputs.length}}
+**Parameters:**
+{{#each inputs}}
+{{#unless (eq name 'inputProof')}}
+- `{{name}}` {{#if fhevmInfo}}**(encrypted {{fhevmInfo.fhevmTypeName}})**{{else}}({{type}}){{/if}} - {{#if description}}{{description}}{{else}}Function parameter{{/if}}
+{{/unless}}
+{{/each}}
+
+{{/if}}
+{{#if outputs.length}}
+**Returns:**
+{{#each outputs}}
+- {{#if name}}`{{name}}` {{/if}}{{#if fhevmInfo}}**(encrypted {{fhevmInfo.fhevmTypeName}})**{{else}}({{type}}){{/if}} - {{#if description}}{{description}}{{else}}Return value{{/if}}
+{{/each}}
+
+{{#if (hasEncryptedOutput this)}}
+{% hint style="warning" %}
+**Decryption Required:** This function returns an encrypted handle. Use the decrypt command to view the plaintext value.
+{% endhint %}
+
+{{/if}}
+{{/if}}
+{{#if (or (hasEncryptedInput this) (hasEncryptedOutput this))}}
+**FHE Operations:**
+{{#if (hasEncryptedInput this)}}- Converts external encrypted input{{/if}}
+{{#if (hasEncryptedOutput this)}}- Returns encrypted value{{/if}}
+- Uses FHEVM encryption/decryption
+
+{{/if}}
+{{#if @root.includeUsageExamples}}
+**Usage Examples:**
+
+{% tabs %}
+
+{{#if (isView this)}}
+{% tab title="Call Function" %}
+```bash
+zcraft call{{#if @root.network}} --network {{@root.network}}{{/if}}
+> {{name}}({{#each inputs}}{{#unless (eq name 'inputProof')}}{{#if fhevmInfo}}5{{else}}"value"{{/if}}{{#unless @last}}, {{/unless}}{{/unless}}{{/each}})
+```
+{% endtab %}
+
+{{#if (hasEncryptedOutput this)}}
+{% tab title="Decrypt Result" %}
+```bash
+zcraft call{{#if @root.network}} --network {{@root.network}}{{/if}}
+> decrypt({{name}}())
+```
+{% endtab %}
+{{/if}}
+{{else}}
+{% tab title="Interactive REPL" %}
+```bash
+zcraft call{{#if @root.network}} --network {{@root.network}}{{/if}}
+> {{name}}({{#each inputs}}{{#unless (eq name 'inputProof')}}{{#if fhevmInfo}}5{{else}}"value"{{/if}}{{#unless @last}}, {{/unless}}{{/unless}}{{/each}})
+```
+{% endtab %}
+
+{% tab title="Direct Task" %}
+```bash
+npx hardhat {{toLowerCase @root.contractName}}:{{name}}{{#each inputs}}{{#unless (eq name 'inputProof')}} --{{toLowerCase name}} {{#if fhevmInfo}}5{{else}}value{{/if}}{{/unless}}{{/each}}{{#if @root.network}} --network {{@root.network}}{{/if}}
+```
+{% endtab %}
+{{/if}}
+
+{% endtabs %}
+
+{{/if}}

@@ -1,0 +1,60 @@
+# {{name}}
+
+{{#if description}}{{description}}{{else}}FHEVM smart contract with encrypted operations.{{/if}}
+
+{% hint style="info" %}
+{{#if address}}**Contract Address:** {{address}}
+{{/if}}{{#if network}}**Network:** {{network}}
+{{/if}}**FHEVM Types Used:** {{#each fhevmTypes}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+{% endhint %}
+
+{{#if graphs}}
+## Contract Architecture
+
+{{#if graphs.callGraph}}
+![Function Call Graph]({{graphs.callGraph}})
+{{/if}}
+
+{{#if graphs.inheritance}}
+![Inheritance Diagram]({{graphs.inheritance}})
+{{/if}}
+
+{{/if}}
+{{#if fheOperations}}
+## FHE Operations Summary
+
+This contract uses **{{fheOperations.length}} FHE operation{{#if (gt fheOperations.length 1)}}s{{/if}}**:
+
+{{#each fheOperations}}
+- `{{name}}` - {{description}}{{#if count}} (used {{count}} time{{#if (gt count 1)}}s{{/if}}){{/if}}
+{{/each}}
+
+{{/if}}
+## Contract Code{{#if testCode}} & Tests{{/if}}
+
+{% tabs %}
+
+{{#if solidityCode}}
+{% tab title="{{name}}.sol" %}
+```solidity
+{{solidityCode}}
+```
+{% endtab %}
+{{/if}}
+
+{{#if testCode}}
+{% tab title="{{name}}.ts" %}
+```typescript
+{{testCode}}
+```
+{% endtab %}
+{{/if}}
+
+{% endtabs %}
+
+## Functions
+
+{{#each functions}}
+{{> function-section}}
+
+{{/each}}

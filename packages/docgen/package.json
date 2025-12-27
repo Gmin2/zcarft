@@ -1,0 +1,40 @@
+{
+  "name": "@zcraft/docgen",
+  "version": "0.1.0",
+  "description": "GitBook-compatible documentation generator for FHEVM smart contracts",
+  "type": "module",
+  "main": "./lib/src/index.js",
+  "types": "./lib/src/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json && npm run copy:templates",
+    "copy:templates": "mkdir -p lib/src/templates && cp src/templates/*.hbs lib/src/templates/ 2>/dev/null || true",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "clean": "rm -rf lib"
+  },
+  "dependencies": {
+    "@solidity-parser/parser": "^0.16.1",
+    "@zcraft/codegen": "workspace:*",
+    "abitype": "^1.2.3",
+    "graphviz": "^0.0.9",
+    "handlebars": "^4.7.8",
+    "surya": "^0.4.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [
+    "fhevm",
+    "zama",
+    "documentation",
+    "generator",
+    "gitbook",
+    "markdown"
+  ],
+  "author": "",
+  "license": "MIT"
+}
