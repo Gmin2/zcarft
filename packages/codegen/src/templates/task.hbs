@@ -1,0 +1,55 @@
+/**
+ * Task: {{name}}
+ * {{description}}
+ */
+task("{{taskName}}", "{{description}}")
+{{#each params}}
+  .addParam("{{name}}", "{{description}}")
+{{/each}}
+  .setAction(async function(taskArgs, hre) {
+    const { ethers, deployments{{#if hasExternalInputs}}, fhevm{{/if}} } = hre;
+
+{{#if hasExternalInputs}}
+    await fhevm.initializeCLIApi();
+
+{{/if}}
+    const deployment = await deployments.get("{{contractName}}");
+    const signers = await ethers.getSigners();
+    const contract = await ethers.getContractAt("{{contractName}}", deployment.address);
+
+{{#if hasExternalInputs}}
+    // Encrypt external inputs
+    const encrypted = await fhevm
+      .createEncryptedInput(deployment.address, await signers[0].getAddress())
+{{#each encryptionCalls}}
+      .{{method}}(taskArgs.{{param}})
+{{/each}}
+      .encrypt();
+
+{{/if}}
+{{#if isView}}
+    // Call view function
+    const result = await contract.{{functionName}}({{#each callArgs}}{{value}}{{#unless @last}}, {{/unless}}{{/each}});
+
+    console.log('');
+    console.log('\x1b[32m✓\x1b[0m  \x1b[1m{{functionName}}\x1b[0m');
+    console.log('\x1b[2m|  Result: ' + result + '\x1b[0m');
+    console.log('');
+
+    return result;
+{{else}}
+    // Send transaction
+    const tx = await contract.{{functionName}}({{#each callArgs}}{{value}}{{#unless @last}}, {{/unless}}{{/each}});
+
+    const receipt = await tx.wait();
+
+    console.log('');
+    console.log('\x1b[32m✓\x1b[0m  \x1b[1mTransaction confirmed\x1b[0m');
+    console.log('\x1b[2m|  Tx:    ' + tx.hash.slice(0, 10) + '...' + tx.hash.slice(-8) + '\x1b[0m');
+    console.log('\x1b[2m|  Block: ' + receipt.blockNumber + '\x1b[0m');
+    console.log('\x1b[2m|  Gas:   ' + receipt.gasUsed.toString() + '\x1b[0m');
+    console.log('');
+
+    return receipt;
+{{/if}}
+  });

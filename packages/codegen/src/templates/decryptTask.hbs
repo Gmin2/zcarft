@@ -1,0 +1,38 @@
+/**
+ * Task: {{taskName}}
+ * {{description}}
+ */
+task("{{taskName}}", "{{description}}")
+  .setAction(async function(taskArgs, hre) {
+    const { ethers, deployments, fhevm } = hre;
+
+    await fhevm.initializeCLIApi();
+
+    const deployment = await deployments.get("{{contractName}}");
+    const signers = await ethers.getSigners();
+    const contract = await ethers.getContractAt("{{contractName}}", deployment.address);
+
+    const encryptedValue = await contract.{{functionName}}();
+
+    if (encryptedValue === ethers.ZeroHash) {
+      console.log('');
+      console.log('\x1b[32m✓\x1b[0m  \x1b[1m{{functionName}} (decrypted)\x1b[0m');
+      console.log('\x1b[2m|  Value: 0\x1b[0m');
+      console.log('');
+      return 0;
+    }
+
+    const decryptedValue = await fhevm.userDecryptEuint(
+      {{fhevmTypeId}}, // {{fhevmTypeName}}
+      encryptedValue,
+      deployment.address,
+      signers[0]
+    );
+
+    console.log('');
+    console.log('\x1b[32m✓\x1b[0m  \x1b[1m{{functionName}} (decrypted)\x1b[0m');
+    console.log('\x1b[2m|  Value: ' + decryptedValue + '\x1b[0m');
+    console.log('');
+
+    return decryptedValue;
+  });
