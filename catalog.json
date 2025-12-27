@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "categories": {
     "basic": {
-      "name": "Basic",
+      "name": "Basics",
       "description": "Fundamental FHE operations and patterns",
       "icon": "📦",
       "order": 1
@@ -13,23 +13,29 @@
       "icon": "🔐",
       "order": 2
     },
-    "concepts": {
-      "name": "Key Concepts",
-      "description": "Access control, input proofs, and best practices",
-      "icon": "💡",
+    "defi": {
+      "name": "DeFi",
+      "description": "Confidential financial applications and token standards",
+      "icon": "💰",
       "order": 3
     },
-    "applications": {
-      "name": "Applications",
-      "description": "Real-world FHE use cases and DeFi patterns",
+    "gaming": {
+      "name": "Gaming",
+      "description": "Encrypted gaming mechanics and fair randomness",
       "icon": "🎮",
       "order": 4
     },
-    "openzeppelin": {
-      "name": "OpenZeppelin",
-      "description": "ERC7984 confidential tokens and DeFi",
-      "icon": "🛡️",
+    "governance": {
+      "name": "Governance",
+      "description": "Private voting and DAO patterns",
+      "icon": "🗳️",
       "order": 5
+    },
+    "advanced": {
+      "name": "Advanced",
+      "description": "Complex patterns and OpenZeppelin integrations",
+      "icon": "🚀",
+      "order": 6
     }
   },
   "examples": {
@@ -37,243 +43,462 @@
       "category": "basic",
       "title": "FHE Counter",
       "description": "Simple encrypted counter demonstrating basic FHE operations",
-      "source": "docs",
-      "contract": "examples/contracts/basic/FHECounter.sol",
-      "test": "examples/test/basic/FHECounter.test.ts",
+      "source": "zplate",
+      "contract": "zplate/fhe-counter/contracts/FHECounter.sol",
+      "test": "zplate/fhe-counter/test/FHECounter.ts",
       "tags": ["basic", "arithmetic", "counter", "beginner"],
       "keyConcepts": [
         "euint32 encrypted type",
-        "TFHE.add and TFHE.sub operations",
+        "FHE.add and FHE.sub operations",
         "FHE.allow and FHE.allowThis access control",
         "Input proof validation with FHE.fromExternal"
       ],
       "difficulty": 1,
       "estimatedTime": "15 minutes",
-      "learnPath": "start-here",
       "highlights": [
         "Perfect starting point for FHE",
         "Shows transition from plaintext to encrypted",
         "Covers all fundamental patterns"
       ]
     },
-    "fhe-if-then-else": {
+    "fhe-simple-vault": {
       "category": "basic",
-      "title": "FHE Conditional Logic",
-      "description": "Demonstrates conditional logic and comparisons on encrypted values",
-      "source": "docs",
-      "contract": "examples/contracts/basic/FHEIfThenElse.sol",
-      "test": "examples/test/basic/FHEIfThenElse.test.ts",
-      "tags": ["operations", "conditional", "comparison"],
+      "title": "Simple Confidential Vault",
+      "description": "Encrypted token storage with confidential balance tracking",
+      "source": "zplate",
+      "contract": "zplate/fhe-simple-vault/contracts/FHESimpleVault.sol",
+      "test": "zplate/fhe-simple-vault/test/FHESimpleVault.ts",
+      "tags": ["vault", "defi", "storage", "balance"],
       "keyConcepts": [
-        "FHE.ge comparison operation",
-        "FHE.select for conditional selection",
-        "ebool encrypted boolean type",
-        "Computing max(a, b) without revealing values"
+        "Encrypted balance management",
+        "Deposit and withdrawal patterns",
+        "User-specific encrypted state",
+        "Permission management for balance queries",
+        "Basic DeFi building block"
       ],
       "difficulty": 2,
+      "estimatedTime": "30 minutes",
+      "highlights": [
+        "Foundation for DeFi vaults",
+        "Learn balance tracking patterns",
+        "Simple and clear architecture"
+      ]
+    },
+    "fhe-voting": {
+      "category": "basic",
+      "title": "FHE Voting System",
+      "description": "Confidential voting with encrypted yes/no ballots and time-based access control",
+      "source": "zplate",
+      "contract": "zplate/fhe-voting/contracts/FHEVoting.sol",
+      "test": "zplate/fhe-voting/test/FHEVoting.ts",
+      "tags": ["voting", "governance", "privacy", "boolean"],
+      "keyConcepts": [
+        "Boolean to integer conversion for vote counting",
+        "Encrypted vote tallying without decryption",
+        "Time-based access control with deadlines",
+        "Delayed permission granting",
+        "Double-voting prevention"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "40 minutes",
+      "highlights": [
+        "Learn encrypted vote aggregation",
+        "Understand boolean→integer conversion trick",
+        "Real-world governance pattern"
+      ]
+    },
+    "fhe-operations": {
+      "category": "basic",
+      "title": "FHE Operations Reference",
+      "description": "Comprehensive showcase of all FHE operations - arithmetic, comparison, bitwise, and casting",
+      "source": "zplate",
+      "contract": "zplate/fhe-operations/contracts/FHEOperations.sol",
+      "test": "zplate/fhe-operations/test/FHEOperations.ts",
+      "tags": ["operations", "reference", "arithmetic", "bitwise", "comparison"],
+      "keyConcepts": [
+        "All arithmetic operations (add, sub, mul, div, rem)",
+        "Comparison operations (eq, ne, lt, le, gt, ge)",
+        "Bitwise operations (and, or, xor, not, shl, shr)",
+        "Type casting and conversion patterns",
+        "Min, max, and select operations"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "30 minutes",
+      "highlights": [
+        "Complete operation reference",
+        "Learn plaintext vs encrypted operations",
+        "Essential for all FHE development"
+      ]
+    },
+    "fhe-random": {
+      "category": "basic",
+      "title": "FHE Random Number Generation",
+      "description": "Encrypted random number generation - dice rolling, ranges, and gaming patterns",
+      "source": "zplate",
+      "contract": "zplate/fhe-random/contracts/FHERandom.sol",
+      "test": "zplate/fhe-random/test/FHERandom.ts",
+      "tags": ["random", "gaming", "rng", "dice"],
+      "keyConcepts": [
+        "FHE.randEuint8() and FHE.randEuint32()",
+        "Range conversion with modulo",
+        "Dice rolling patterns (d6, d20, custom)",
+        "Weighted random selection",
+        "Multiple dice combinations"
+      ],
+      "difficulty": 2,
+      "estimatedTime": "25 minutes",
+      "highlights": [
+        "Learn encrypted RNG",
+        "Perfect for gaming applications",
+        "Provably fair randomness"
+      ]
+    },
+    "encrypt-single": {
+      "category": "encryption",
+      "title": "Encrypt Single Value",
+      "description": "Demonstrate accepting single encrypted user input with proof validation",
+      "source": "zplate",
+      "contract": "zplate/encrypt-single/contracts/EncryptSingleValue.sol",
+      "test": "zplate/encrypt-single/test/EncryptSingleValue.ts",
+      "tags": ["encryption", "input-proof", "fhevmjs"],
+      "keyConcepts": [
+        "FHE.fromExternal for input validation",
+        "Input proof binding to contract and user",
+        "Client-side encryption with fhevmjs",
+        "createEncryptedInput pattern"
+      ],
+      "difficulty": 1,
       "estimatedTime": "20 minutes",
       "highlights": [
-        "Learn encrypted comparisons",
-        "Understand FHE.select (if-then-else)",
-        "Essential for game logic and DeFi"
+        "Essential input pattern",
+        "Learn proof validation",
+        "Client-side integration"
       ]
     },
-    "encrypt-decrypt-values": {
+    "encrypt-multiple": {
       "category": "encryption",
-      "title": "Encrypt & Decrypt Values",
-      "description": "Complete guide to encrypting inputs and decrypting results",
-      "source": "docs",
-      "contract": "examples/contracts/encryption/EncryptDecryptValues.sol",
-      "test": "examples/test/encryption/EncryptDecryptValues.test.ts",
-      "tags": ["encryption", "decryption", "input-proof"],
+      "title": "Encrypt Multiple Values",
+      "description": "Accept and store multiple encrypted values of different types in one call",
+      "source": "zplate",
+      "contract": "zplate/encrypt-multiple/contracts/EncryptMultipleValues.sol",
+      "test": "zplate/encrypt-multiple/test/EncryptMultipleValues.ts",
+      "tags": ["encryption", "multiple-types", "optimization"],
       "keyConcepts": [
-        "Creating encrypted inputs with fhevmjs",
-        "Zero-knowledge input proofs",
-        "User decryption (private to user)",
-        "Public decryption (on-chain reveal)",
-        "Multiple encrypted types (euint32, ebool, eaddress)"
-      ],
-      "difficulty": 2,
-      "estimatedTime": "25 minutes",
-      "learnPath": "start-here",
-      "highlights": [
-        "Covers both encryption and decryption",
-        "Shows user vs public decryption",
-        "Demonstrates multiple types"
-      ]
-    },
-    "access-control": {
-      "category": "concepts",
-      "title": "Access Control Patterns",
-      "description": "Master FHE permission management patterns",
-      "source": "custom",
-      "contract": "examples/contracts/concepts/AccessControl.sol",
-      "test": "examples/test/concepts/AccessControl.test.ts",
-      "tags": ["access-control", "permissions", "security"],
-      "keyConcepts": [
-        "FHE.allow for persistent user access",
-        "FHE.allowThis for contract access",
-        "FHE.allowTransient for temporary access",
-        "Permission hierarchy and lifecycle",
-        "Common permission errors and fixes"
+        "Multiple encrypted types (ebool, euint32, eaddress)",
+        "Single proof for multiple values",
+        "Gas optimization patterns",
+        "Handle ordering in client"
       ],
       "difficulty": 2,
       "estimatedTime": "25 minutes",
       "highlights": [
-        "Critical for all FHE development",
-        "Shows common pitfalls",
-        "Demonstrates all permission patterns"
+        "Efficient batching pattern",
+        "Multiple type handling",
+        "Real-world optimization"
       ]
     },
-    "input-proofs": {
-      "category": "concepts",
-      "title": "Input Proof Security",
-      "description": "Why input proofs are critical for FHE security",
-      "source": "custom",
-      "contract": "examples/contracts/concepts/InputProofs.sol",
-      "test": "examples/test/concepts/InputProofs.test.ts",
-      "tags": ["security", "proofs", "attack-prevention"],
+    "decrypt-user": {
+      "category": "encryption",
+      "title": "User Decryption",
+      "description": "User decryption pattern with permission setup - includes wrong implementation for learning",
+      "source": "zplate",
+      "contract": "zplate/decrypt-user/contracts/UserDecryptSingleValue.sol",
+      "test": "zplate/decrypt-user/test/UserDecryptSingleValue.ts",
+      "tags": ["decryption", "permissions", "anti-pattern"],
       "keyConcepts": [
-        "What are input proofs",
-        "Preventing ciphertext mauling attacks",
-        "Preventing replay attacks",
-        "Contract/user address binding",
-        "Security implications of missing proofs"
+        "FHE.allowThis before FHE.allow pattern",
+        "User decryption with fhevmjs",
+        "Permission order importance",
+        "Common mistakes and fixes"
       ],
       "difficulty": 2,
       "estimatedTime": "25 minutes",
       "highlights": [
-        "Essential security knowledge",
-        "Shows attack scenarios",
-        "Explains cryptographic binding"
+        "Critical permission pattern",
+        "Shows correct AND wrong way",
+        "Debugging permission errors"
       ]
     },
-    "blind-auction": {
-      "category": "applications",
-      "title": "Blind Auction",
-      "description": "Sealed-bid NFT auction with encrypted bids",
-      "source": "docs",
-      "contract": "examples/contracts/applications/BlindAuction.sol",
-      "test": "examples/test/applications/BlindAuction.test.ts",
-      "tags": ["auction", "nft", "advanced", "game-theory"],
+    "decrypt-gateway": {
+      "category": "encryption",
+      "title": "Gateway Decryption",
+      "description": "Two-phase gateway decryption pattern for public revelation with oracle callback",
+      "source": "zplate",
+      "contract": "zplate/decrypt-gateway/contracts/PublicDecryptSingleValue.sol",
+      "test": "zplate/decrypt-gateway/test/PublicDecryptSingleValue.ts",
+      "tags": ["decryption", "gateway", "oracle", "callback"],
       "keyConcepts": [
-        "FHE.select for max bidder determination",
-        "Gateway public decryption for winner",
-        "Time-locked auction phases",
-        "Refund mechanism for losing bidders",
-        "Integration with ERC721 and ConfidentialERC20",
-        "Complete end-to-end FHE application"
+        "FHE.makePubliclyDecryptable request",
+        "Gateway callback pattern",
+        "FHE.checkSignatures verification",
+        "Two-phase decryption flow"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "35 minutes",
+      "highlights": [
+        "Public decryption mechanism",
+        "Event-driven architecture",
+        "Production decryption pattern"
+      ]
+    },
+    "confidential-bank": {
+      "category": "defi",
+      "title": "Confidential Bank",
+      "description": "Multi-user bank with deposits, withdrawals, and transfers while keeping balances private",
+      "source": "zplate",
+      "contract": "zplate/confidential-bank/contracts/ConfidentialBank.sol",
+      "test": "zplate/confidential-bank/test/ConfidentialBank.ts",
+      "tags": ["defi", "bank", "transfers", "balances"],
+      "keyConcepts": [
+        "Multi-user balance management",
+        "Encrypted transfers between users",
+        "Permission grants for sender and recipient",
+        "FHESafeMath for underflow protection",
+        "Cannot validate encrypted balances on-chain"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "45 minutes",
+      "highlights": [
+        "Complete DeFi primitive",
+        "Learn transfer patterns",
+        "Understand balance validation limits"
+      ]
+    },
+    "confidential-token": {
+      "category": "defi",
+      "title": "ERC7984 Confidential Token",
+      "description": "Full implementation of ERC7984 confidential token standard with encrypted balances",
+      "source": "zplate",
+      "contract": "zplate/confidential-token/contracts/ERC7984Token.sol",
+      "test": "zplate/confidential-token/test/ERC7984Token.ts",
+      "tags": ["erc7984", "token", "standard", "openzeppelin"],
+      "keyConcepts": [
+        "ERC7984 standard implementation",
+        "Operator delegation with time limits",
+        "Transfer-and-call callback pattern",
+        "FHESafeMath safe transfers",
+        "ACL for encrypted value access"
       ],
       "difficulty": 4,
       "estimatedTime": "60 minutes",
-      "learnPath": "advanced",
       "highlights": [
-        "Complete real-world application",
-        "Shows multi-phase design",
-        "Demonstrates FHE advantages over commit-reveal"
+        "Industry-standard token",
+        "Production-ready code",
+        "Foundation for DeFi apps"
+      ]
+    },
+    "sealed-auction": {
+      "category": "defi",
+      "title": "Sealed Bid Auction",
+      "description": "NFT auction with encrypted bids preventing bid sniping and front-running",
+      "source": "zplate",
+      "contract": "zplate/sealed-auction/contracts/SealedAuction.sol",
+      "test": "zplate/sealed-auction/test/SealedAuction.ts",
+      "tags": ["auction", "nft", "bidding", "advanced"],
+      "keyConcepts": [
+        "FHE.select for max bidder determination",
+        "Gateway public decryption for winner",
+        "Three-phase auction (bid, reveal, claim)",
+        "Encrypted comparison for highest bid",
+        "Refund mechanism for losers"
+      ],
+      "difficulty": 4,
+      "estimatedTime": "60 minutes",
+      "highlights": [
+        "Complete real-world app",
+        "Multi-phase design",
+        "Prevents bid sniping"
+      ]
+    },
+    "dutch-auction": {
+      "category": "defi",
+      "title": "Dutch Auction",
+      "description": "Descending price auction with confidential purchase amounts",
+      "source": "zplate",
+      "contract": "zplate/dutch-auction/contracts/ConfidentialDutchAuction.sol",
+      "test": "zplate/dutch-auction/test/ConfidentialDutchAuction.ts",
+      "tags": ["auction", "dutch", "dynamic-pricing"],
+      "keyConcepts": [
+        "Time-based price reduction",
+        "Encrypted purchase quantities",
+        "FHE.min for capping purchases",
+        "Balance verification patterns",
+        "Gateway for initialization"
+      ],
+      "difficulty": 4,
+      "estimatedTime": "50 minutes",
+      "highlights": [
+        "Dynamic pricing mechanics",
+        "Privacy-preserving purchases",
+        "Advanced auction pattern"
+      ]
+    },
+    "confidential-airdrop": {
+      "category": "defi",
+      "title": "Confidential Airdrop",
+      "description": "Private token distribution where amounts remain confidential",
+      "source": "zplate",
+      "contract": "zplate/confidential-airdrop/contracts/ConfidentialAirdrop.sol",
+      "test": "zplate/confidential-airdrop/test/ConfidentialAirdrop.ts",
+      "tags": ["airdrop", "distribution", "privacy"],
+      "keyConcepts": [
+        "Encrypted airdrop amounts",
+        "Merkle tree eligibility",
+        "Time-bound claiming",
+        "Permission management for token contract"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "40 minutes",
+      "highlights": [
+        "Private token distribution",
+        "Merkle proof integration",
+        "Fair distribution pattern"
+      ]
+    },
+    "fhe-wordle": {
+      "category": "gaming",
+      "title": "FHE Wordle",
+      "description": "Encrypted word guessing game with verifiable fairness using Merkle proofs",
+      "source": "zplate",
+      "contract": "zplate/fhe-wordle/contracts/FHEWordle.sol",
+      "test": "zplate/fhe-wordle/test/FHEWordle.ts",
+      "tags": ["gaming", "wordle", "creative", "merkle"],
+      "keyConcepts": [
+        "Encrypted letter arrays (euint8[5])",
+        "Encrypted feedback computation",
+        "Merkle proof for word validation",
+        "Bitwise operations for feedback masks",
+        "Clone pattern via factory"
+      ],
+      "difficulty": 5,
+      "estimatedTime": "90 minutes",
+      "highlights": [
+        "Highly creative implementation",
+        "Complex encrypted logic",
+        "Production game example"
+      ]
+    },
+    "dice-game": {
+      "category": "gaming",
+      "title": "Dice Betting Game",
+      "description": "Simple betting game with encrypted random dice rolls and payouts",
+      "source": "zplate",
+      "contract": "zplate/dice-game/contracts/DiceGame.sol",
+      "test": "zplate/dice-game/test/DiceGame.ts",
+      "tags": ["gaming", "dice", "betting", "random"],
+      "keyConcepts": [
+        "FHE.randEuint8 for dice rolls",
+        "Encrypted betting amounts",
+        "FHE.select for payout calculation",
+        "Fair game mechanics",
+        "Range conversion (0-255 to 1-6)"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "35 minutes",
+      "highlights": [
+        "Learn game mechanics",
+        "Encrypted randomness",
+        "Fair betting pattern"
+      ]
+    },
+    "rock-paper-scissors": {
+      "category": "gaming",
+      "title": "Rock Paper Scissors",
+      "description": "Two-player game with encrypted moves and commit-reveal pattern",
+      "source": "zplate",
+      "contract": "zplate/rock-paper-scissors/contracts/RockPaperScissors.sol",
+      "test": "zplate/rock-paper-scissors/test/RockPaperScissors.ts",
+      "tags": ["gaming", "pvp", "commit-reveal"],
+      "keyConcepts": [
+        "Commit-reveal with encryption",
+        "Two-phase gameplay",
+        "Gateway decryption for winner",
+        "Encrypted move comparison",
+        "Game state management"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "45 minutes",
+      "highlights": [
+        "Classic game pattern",
+        "PvP mechanics",
+        "Prevents cheating"
       ]
     },
     "confidential-voting": {
-      "category": "applications",
-      "title": "Confidential Voting",
-      "description": "Secret ballot voting with encrypted tallies",
-      "source": "custom",
-      "contract": "examples/contracts/applications/ConfidentialVoting.sol",
-      "test": "examples/test/applications/ConfidentialVoting.test.ts",
-      "tags": ["voting", "governance", "privacy"],
+      "category": "governance",
+      "title": "DAO Confidential Voting",
+      "description": "DAO proposal voting with encrypted vote counts and delegation",
+      "source": "zplate",
+      "contract": "zplate/confidential-voting/contracts/ConfidentialVoting.sol",
+      "test": "zplate/confidential-voting/test/ConfidentialVoting.ts",
+      "tags": ["governance", "dao", "voting", "delegation"],
       "keyConcepts": [
-        "Encrypted vote storage",
-        "Private vote tallying with TFHE.add",
-        "Public result revelation via Gateway",
-        "Double-voting prevention",
-        "Time-bound voting periods"
+        "Encrypted voting power delegation",
+        "Historical checkpoints",
+        "Time-based vote lookups",
+        "VotesConfidential pattern",
+        "Handle access management"
       ],
-      "difficulty": 3,
-      "estimatedTime": "45 minutes",
+      "difficulty": 4,
+      "estimatedTime": "55 minutes",
       "highlights": [
-        "Real-world governance use case",
-        "Shows encrypted aggregation",
-        "Privacy-preserving democracy"
+        "Advanced governance pattern",
+        "OpenZeppelin VotesConfidential",
+        "Production DAO primitive"
       ]
     },
-    "erc7984-token": {
-      "category": "openzeppelin",
-      "title": "ERC7984 Confidential Token",
-      "description": "Confidential ERC-20 token with encrypted balances",
-      "source": "openzeppelin",
-      "contract": "openzeppelin-confidential-contracts/contracts/token/ERC7984/ERC7984.sol",
-      "test": "examples/test/openzeppelin/ERC7984.test.ts",
-      "tags": ["erc7984", "token", "standard", "defi"],
+    "quadratic-voting": {
+      "category": "governance",
+      "title": "Quadratic Voting",
+      "description": "QV with encrypted vote allocation and quadratic cost calculation",
+      "source": "zplate",
+      "contract": "zplate/quadratic-voting/contracts/QuadraticVoting.sol",
+      "test": "zplate/quadratic-voting/test/QuadraticVoting.ts",
+      "tags": ["governance", "qv", "advanced"],
       "keyConcepts": [
-        "Encrypted balances with euint64",
-        "Confidential transfers without revealing amounts",
-        "Operator delegation system",
-        "Transfer-and-call callback pattern",
-        "ACL for encrypted value access",
-        "Industry-standard confidential token"
+        "Encrypted vote counts",
+        "Quadratic cost calculation (votes²)",
+        "Allocation management",
+        "Multi-proposal voting",
+        "Privacy-preserving QV"
       ],
-      "difficulty": 3,
-      "estimatedTime": "45 minutes",
-      "learnPath": "defi",
+      "difficulty": 4,
+      "estimatedTime": "50 minutes",
       "highlights": [
-        "OpenZeppelin standard implementation",
-        "Production-ready confidential token",
-        "Foundation for DeFi applications"
+        "Advanced voting mechanism",
+        "Encrypted quadratic math",
+        "Fair resource allocation"
       ]
     },
-    "erc20-wrapper": {
-      "category": "openzeppelin",
-      "title": "ERC20 Wrapper",
-      "description": "Wrap standard ERC20 as confidential ERC7984",
-      "source": "openzeppelin",
-      "contract": "openzeppelin-confidential-contracts/contracts/token/ERC7984/extensions/ERC7984ERC20Wrapper.sol",
-      "test": "examples/test/openzeppelin/ERC7984Wrapper.test.ts",
-      "tags": ["wrapper", "bridge", "interop"],
+    "eth-wrapper": {
+      "category": "advanced",
+      "title": "ETH Wrapper",
+      "description": "Wrap native ETH as confidential ERC7984 token",
+      "source": "zplate",
+      "contract": "zplate/eth-wrapper/contracts/ERC7984ETHWrapper.sol",
+      "test": "zplate/eth-wrapper/test/ERC7984ETHWrapper.ts",
+      "tags": ["wrapper", "eth", "bridge"],
       "keyConcepts": [
-        "Wrapping public ERC20 to confidential ERC7984",
-        "Two-phase unwrap with disclosure proof",
-        "ERC1363 callback integration",
-        "Bridge between public and private tokens"
+        "ETH to confidential token wrapping",
+        "Unwrap with disclosure proof",
+        "Bridge pattern",
+        "Native asset integration"
       ],
       "difficulty": 3,
       "estimatedTime": "40 minutes",
       "highlights": [
-        "Connect to existing DeFi",
-        "Privacy layer for any ERC20",
-        "Shows wrap/unwrap patterns"
-      ]
-    },
-    "vesting-wallet": {
-      "category": "openzeppelin",
-      "title": "Confidential Vesting",
-      "description": "Token vesting with encrypted schedules",
-      "source": "openzeppelin",
-      "contract": "openzeppelin-confidential-contracts/contracts/finance/VestingWalletConfidential.sol",
-      "test": "examples/test/openzeppelin/VestingWallet.test.ts",
-      "tags": ["vesting", "defi", "finance"],
-      "keyConcepts": [
-        "Linear vesting schedule",
-        "Encrypted vesting amounts",
-        "Time-based release calculation",
-        "Cliff period support",
-        "Beneficiary release mechanism"
-      ],
-      "difficulty": 3,
-      "estimatedTime": "40 minutes",
-      "learnPath": "defi",
-      "highlights": [
+        "Native ETH privacy layer",
         "Essential DeFi primitive",
-        "Private token lockups",
-        "Team/investor vesting"
+        "OpenZeppelin pattern"
       ]
     },
-    "confidential-swap": {
-      "category": "openzeppelin",
+    "token-swap": {
+      "category": "advanced",
       "title": "Confidential Token Swap",
-      "description": "Fully private swap between encrypted tokens",
-      "source": "openzeppelin",
-      "contract": "openzeppelin-confidential-contracts/contracts/mocks/docs/SwapERC7984ToERC7984.sol",
-      "test": "examples/test/openzeppelin/ConfidentialSwap.test.ts",
+      "description": "Fully private swap between encrypted ERC7984 tokens",
+      "source": "zplate",
+      "contract": "zplate/token-swap/contracts/SwapERC7984ToERC7984.sol",
+      "test": "zplate/token-swap/test/TokenSwap.ts",
       "tags": ["swap", "defi", "atomic"],
       "keyConcepts": [
         "Fully confidential token exchange",
@@ -284,18 +509,41 @@
       "difficulty": 4,
       "estimatedTime": "45 minutes",
       "highlights": [
-        "Privacy-first DeFi",
-        "No information leakage",
-        "Foundation for confidential DEX"
+        "Privacy-first DEX primitive",
+        "Zero information leakage",
+        "OpenZeppelin implementation"
       ]
     },
-    "erc7984-rwa": {
-      "category": "openzeppelin",
+    "vesting-wallet": {
+      "category": "advanced",
+      "title": "Confidential Vesting",
+      "description": "Token vesting with encrypted schedules and time-based release",
+      "source": "zplate",
+      "contract": "zplate/vesting-wallet/contracts/VestingWalletConfidential.sol",
+      "test": "zplate/vesting-wallet/test/VestingWallet.ts",
+      "tags": ["vesting", "defi", "finance"],
+      "keyConcepts": [
+        "Linear vesting schedule",
+        "Encrypted vesting amounts",
+        "Time-based release calculation",
+        "Cliff period support",
+        "Beneficiary release mechanism"
+      ],
+      "difficulty": 3,
+      "estimatedTime": "40 minutes",
+      "highlights": [
+        "Essential DeFi primitive",
+        "Private token lockups",
+        "Team/investor vesting"
+      ]
+    },
+    "freezable-compliance": {
+      "category": "advanced",
       "title": "RWA Compliance Token",
-      "description": "Real-world asset token with compliance controls",
-      "source": "openzeppelin",
-      "contract": "openzeppelin-confidential-contracts/contracts/token/ERC7984/extensions/ERC7984Rwa.sol",
-      "test": "examples/test/openzeppelin/ERC7984Rwa.test.ts",
+      "description": "Real-world asset token with freezable, pausable, and compliance controls",
+      "source": "zplate",
+      "contract": "zplate/freezable-compliance/contracts/ERC7984Rwa.sol",
+      "test": "zplate/freezable-compliance/test/ERC7984Rwa.ts",
       "tags": ["rwa", "compliance", "institutional", "advanced"],
       "keyConcepts": [
         "Freezable + Restricted + Pausable combined",
@@ -307,7 +555,6 @@
       ],
       "difficulty": 5,
       "estimatedTime": "60 minutes",
-      "learnPath": "advanced",
       "highlights": [
         "Production RWA tokenization",
         "Complete compliance framework",
@@ -317,63 +564,87 @@
   },
   "learningPaths": {
     "quickstart": {
-      "name": "Quick Start (30 mins)",
-      "description": "Get started with FHE in under 30 minutes",
-      "examples": ["fhe-counter", "encrypt-decrypt-values"]
+      "name": "Quick Start (1 hour)",
+      "description": "Get started with FHE in under 1 hour",
+      "examples": ["fhe-counter", "encrypt-single", "fhe-operations"]
     },
     "fundamentals": {
-      "name": "FHE Fundamentals (2 hours)",
+      "name": "FHE Fundamentals (3 hours)",
       "description": "Master the core concepts of FHEVM development",
       "examples": [
         "fhe-counter",
-        "fhe-if-then-else",
-        "encrypt-decrypt-values",
-        "access-control",
-        "input-proofs"
-      ]
-    },
-    "applications": {
-      "name": "Building Applications (3 hours)",
-      "description": "Build real-world FHE applications",
-      "examples": [
-        "fhe-counter",
-        "encrypt-decrypt-values",
-        "blind-auction",
-        "confidential-voting"
+        "fhe-operations",
+        "encrypt-single",
+        "encrypt-multiple",
+        "decrypt-user",
+        "decrypt-gateway",
+        "fhe-random"
       ]
     },
     "defi": {
-      "name": "Confidential DeFi (4 hours)",
+      "name": "Confidential DeFi (5 hours)",
       "description": "Build privacy-preserving DeFi protocols",
       "examples": [
-        "erc7984-token",
-        "erc20-wrapper",
+        "fhe-simple-vault",
+        "confidential-bank",
+        "confidential-token",
+        "sealed-auction",
+        "dutch-auction",
+        "token-swap",
+        "vesting-wallet"
+      ]
+    },
+    "gaming": {
+      "name": "Gaming Applications (4 hours)",
+      "description": "Build encrypted games with fair randomness",
+      "examples": [
+        "fhe-random",
+        "dice-game",
+        "rock-paper-scissors",
+        "fhe-wordle"
+      ]
+    },
+    "governance": {
+      "name": "Governance & Voting (3 hours)",
+      "description": "Build private voting and DAO systems",
+      "examples": [
+        "fhe-voting",
+        "confidential-voting",
+        "quadratic-voting"
+      ]
+    },
+    "advanced": {
+      "name": "Advanced Patterns (4 hours)",
+      "description": "Master complex FHE patterns and OpenZeppelin integrations",
+      "examples": [
+        "confidential-token",
+        "eth-wrapper",
+        "token-swap",
         "vesting-wallet",
-        "confidential-swap",
-        "erc7984-rwa"
+        "freezable-compliance",
+        "fhe-wordle"
       ]
     }
   },
   "stats": {
-    "totalExamples": 12,
+    "totalExamples": 24,
     "byDifficulty": {
-      "beginner": 3,
-      "intermediate": 4,
-      "advanced": 3,
-      "expert": 2
+      "beginner": 2,
+      "intermediate": 10,
+      "advanced": 8,
+      "expert": 4
     },
     "byCategory": {
-      "basic": 2,
-      "encryption": 1,
-      "concepts": 2,
-      "applications": 2,
-      "openzeppelin": 5
+      "basic": 5,
+      "encryption": 4,
+      "defi": 5,
+      "gaming": 3,
+      "governance": 2,
+      "advanced": 5
     },
-    "estimatedTotalTime": "7 hours",
+    "estimatedTotalTime": "17 hours",
     "sources": {
-      "zama-docs": 4,
-      "openzeppelin": 5,
-      "custom": 3
+      "zplate": 24
     }
   }
 }
