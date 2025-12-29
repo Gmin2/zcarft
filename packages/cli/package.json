@@ -34,6 +34,7 @@
     "ethers": "^6.16.0",
     "execa": "^9.5.2",
     "fs-extra": "^11.2.0",
+    "giget": "^1.2.1",
     "inquirer": "^12.2.0",
     "ora": "^8.1.1",
     "tiged": "^2.12.7"
@@ -63,9 +64,6 @@
       },
       "generate": {
         "description": "Generate code from contracts (tasks, docs, etc.)"
-      },
-      "catalog": {
-        "description": "Manage example templates"
       }
     }
   },
