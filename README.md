@@ -1,9 +1,9 @@
 # ZCraft
-[![CI](https://github.com/Gmin2/zcraft/actions/workflows/ci.yml/badge.svg)](https://github.com/Gmin2/zcraft/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@zcraft/cli.svg)](https://www.npmjs.com/package/@zcraft/cli)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An interactive CLI for FHEVM development - Build, deploy, and interact with fully homomorphic encrypted smart contracts.
+
+![npm](npm.png)
 
 ## Features
 
@@ -222,7 +222,7 @@ Core utilities and types shared across packages.
 npm install @zcraft/core
 ```
 
-## Available Templates
+## Available Templates (see all the code in the [zcraft-templates](https://github.com/Gmin2/zplate) repo or in https://zcraft.tech)
 
 ### Basic (2 examples)
 - **fhe-counter** - Simple encrypted counter with increment/decrement (15 min)
@@ -246,52 +246,6 @@ npm install @zcraft/core
 - **confidential-swap** - Fully private token exchange protocol (45 min)
 - **erc7984-rwa** - Real-world asset tokenization with compliance (60 min)
 
-## Project Structure
-
-```
-zcraft/
-├── packages/
-│   ├── cli/              # Main CLI package (@zcraft/cli)
-│   │   ├── src/
-│   │   │   ├── commands/  # Command implementations
-│   │   │   │   ├── new.ts
-│   │   │   │   ├── call.ts
-│   │   │   │   ├── generate/
-│   │   │   │   │   ├── tasks.ts
-│   │   │   │   │   └── docs.ts
-│   │   │   │   └── catalog/
-│   │   │   └── utils/     # CLI utilities
-│   │   └── bin/run.js    # Executable entry point
-│   │
-│   ├── codegen/          # Code generation (@zcraft/codegen)
-│   │   ├── src/
-│   │   │   ├── generators/
-│   │   │   ├── templates/
-│   │   │   └── index.ts
-│   │   └── test/
-│   │
-│   ├── docgen/           # Documentation generator (@zcraft/docgen)
-│   │   ├── src/
-│   │   │   ├── generators/
-│   │   │   ├── parsers/
-│   │   │   ├── templates/
-│   │   │   └── index.ts
-│   │   └── test/
-│   │
-│   ├── core/             # Core utilities (@zcraft/core)
-│   │   └── src/
-│   │       ├── types.ts   # TypeScript type definitions
-│   │       ├── catalog.ts # Catalog manager
-│   │       └── index.ts
-│   │
-│   └── templates/        # Example contract templates
-│       ├── contracts/     # Solidity contracts
-│       └── test/          # Test files
-│
-├── catalog.json          # Example catalog metadata
-├── pnpm-workspace.yaml  # pnpm workspace config
-└── package.json         # Root package.json
-```
 
 ## Development
 
